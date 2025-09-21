@@ -1,6 +1,6 @@
 import numpy as np
 from neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
-from optimizer import Momentum
+from optimizer import Adam
 from dataset import generate_data, get_mini_batches
 
 # Hyperparameters
@@ -8,8 +8,8 @@ N_SAMPLES = 1000
 N_FEATURES = 1
 # 5 layers: 1 input, 3 hidden, 1 output
 LAYER_SIZES = [N_FEATURES, 64, 128, 64, N_FEATURES]
-LR = 0.0001 # Adjusted learning rate for stability
-MOMENTUM = 0.9
+LR = 0.001 # Adjusted learning rate for stability
+# MOMENTUM = 0.9
 EPOCHS = 101 # Run for 100 epochs, print every 10
 BATCH_SIZE = 32
 
@@ -25,7 +25,7 @@ def main():
 
     # Initialize network and optimizer
     net = NeuralNetwork(LAYER_SIZES)
-    optimizer = Momentum(lr=LR, momentum=MOMENTUM)
+    optimizer = Adam(lr=LR)
 
     # Training loop
     print("Starting training...")
