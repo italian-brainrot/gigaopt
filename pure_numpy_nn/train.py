@@ -25,7 +25,7 @@ def main():
 
     # Initialize network and optimizer
     net = NeuralNetwork(LAYER_SIZES)
-    optimizer = Momentum(net, lr=LR, momentum=MOMENTUM)
+    optimizer = Momentum(lr=LR, momentum=MOMENTUM)
 
     # Training loop
     print("Starting training...")
@@ -46,7 +46,8 @@ def main():
             grads = net.backward(loss_grad)
 
             # Update weights
-            optimizer.step(grads)
+            params = net.get_params()
+            optimizer.step(params, grads)
 
         avg_loss = epoch_loss / num_batches
         if epoch % 10 == 0:

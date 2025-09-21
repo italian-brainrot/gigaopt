@@ -39,7 +39,7 @@ class NeuralNetwork:
         return current_activation
 
     def backward(self, d_output):
-        grads = {}
+        grads = []
         d_current = d_output
 
         for i in reversed(range(len(self.weights))):
@@ -48,13 +48,27 @@ class NeuralNetwork:
                 d_current = self.layers[i].backward(d_current)
 
             # Gradients of weights and biases
-            grads[f'W{i}'] = np.dot(self.activations[i].T, d_current)
-            grads[f'b{i}'] = np.sum(d_current, axis=0, keepdims=True)
+            d_weights = np.dot(self.activations[i].T, d_current)
+            d_biases = np.sum(d_current, axis=0, keepdims=True)
 
             # Gradient to propagate to the previous layer
             d_current = np.dot(d_current, self.weights[i].T)
 
+            # Prepend the gradients to the list to match the order of params
+            grads.insert(0, d_biases)
+            grads.insert(0, d_weights)
+
         return grads
+
+    def get_params(self):
+        """
+        Returns a list of all trainable parameters (weights and biases).
+        """
+        params = []
+        for w, b in zip(self.weights, self.biases):
+            params.append(w)
+            params.append(b)
+        return params
 
 def mse_loss(y_true, y_pred):
     return np.mean((y_true - y_pred) ** 2)
