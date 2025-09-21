@@ -5,7 +5,7 @@ from dataset import generate_data, get_mini_batches
 
 # Hyperparameters
 N_SAMPLES = 1000
-N_FEATURES = 1
+N_FEATURES = 32
 # 5 layers: 1 input, 3 hidden, 1 output
 LAYER_SIZES = [N_FEATURES, 64, 128, 64, N_FEATURES]
 LR = 0.001 # Adjusted learning rate for stability
