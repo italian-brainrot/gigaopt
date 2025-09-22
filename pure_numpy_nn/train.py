@@ -1,7 +1,7 @@
 import numpy as np
-from neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
-from optimizer import Adam
-from dataset import generate_data, get_mini_batches
+from .neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
+from .optimizers import Adam
+from .dataset import generate_data, get_mini_batches
 
 # Hyperparameters
 N_SAMPLES = 1000
