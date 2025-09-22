@@ -1,4 +1,7 @@
 import numpy as np
+import optuna
+optuna.logging.set_verbosity(optuna.logging.WARNING)
+
 from .neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
 from .optimizers import Adam, AdaThird, Nova
 from .dataset import generate_data, get_mini_batches
@@ -13,70 +16,77 @@ BATCH_SIZE = 32
 
 def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, layer_sizes, epochs, batch_size):
     """
-    Runs a training experiment for a given optimizer.
+    Runs a training experiment for a given optimizer, with learning rate tuning.
     """
     # For reproducibility
-    np.random.seed(42)
+    np.random.seed(0)
 
     # Generate data
     X, y = generate_data(n_samples, n_features)
 
-    # Initialize network and optimizer
-    net = NeuralNetwork(layer_sizes)
-    optimizer = optimizer_class(**optimizer_params)
+    def objective(trial):
+        # Suggest learning rate
+        lr = trial.suggest_float("lr", 1e-5, 1, log=True)
 
-    # Training loop
-    losses = []
-    for epoch in range(epochs):
-        epoch_loss = 0
-        num_batches = 0
-        for x_batch, y_batch in get_mini_batches(X, y, batch_size):
-            # Forward pass
-            y_pred = net.forward(x_batch)
+        # Create a copy of params and update lr
+        current_params = optimizer_params.copy()
+        current_params['lr'] = lr
 
-            # Compute loss
-            loss = mse_loss(y_batch, y_pred)
-            epoch_loss += loss
-            num_batches += 1
+        # Initialize network and optimizer
+        net = NeuralNetwork(layer_sizes)
+        optimizer = optimizer_class(**current_params)
 
-            # Backward pass
-            loss_grad = mse_loss_derivative(y_batch, y_pred)
-            grads = net.backward(loss_grad)
+        # Training loop
+        for epoch in range(epochs):
+            epoch_loss = 0
+            num_batches = 0
+            for x_batch, y_batch in get_mini_batches(X, y, batch_size):
+                y_pred = net.forward(x_batch)
+                loss = mse_loss(y_batch, y_pred)
+                epoch_loss += loss
+                num_batches += 1
+                loss_grad = mse_loss_derivative(y_batch, y_pred)
+                grads = net.backward(loss_grad)
+                params = net.get_params()
+                optimizer.step(params, grads)
 
-            # Update weights
-            params = net.get_params()
-            optimizer.step(params, grads)
+            avg_loss = epoch_loss / num_batches
+            trial.report(avg_loss, epoch)
 
-        avg_loss = epoch_loss / num_batches
-        losses.append(avg_loss)
-    return losses
+            if trial.should_prune():
+                raise optuna.exceptions.TrialPruned()
+
+        return avg_loss
+
+    study = optuna.create_study(direction="minimize", pruner=optuna.pruners.HyperbandPruner())
+    study.optimize(objective, n_trials=100)
+
+    best_lr = study.best_trial.params['lr']
+    print(f"Best LR for {optimizer_class.__name__}: {best_lr}")
+    print(f"Best value: {study.best_value}")
+
+    return study.best_value
 
 def main():
     """
     Main comparison function.
+    
+    IMPORTANT: After an experiment is ran, replace it with the final loss value so that we don't re-run every optimizer each time.
     """
-    # Adam experiment
-    adam_params = {'lr': 0.001}
-    adam_losses = run_experiment(Adam, adam_params, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
 
-    # AdaThird experiment
-    adathird_params = {'lr': 0.003, 'beta3': 0.99}
-    adathird_losses = run_experiment(AdaThird, adathird_params, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
-
-    # Nova experiment
-    nova_params = {'lr': 0.001}
-    nova_losses = run_experiment(Nova, nova_params, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
+    losses = {
+        # adam example:
+        # "Adam": run_experiment(Adam, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
+        
+        "Adam": 0.17723168193770694,
+        "AdaThird": 0.1769168308425637,
+        "Nova": 0.18443070685599255,
+    }
 
     # Print comparison table
     print("Optimizer Performance Comparison")
-    print("-" * 70)
-    print(f"{'Epoch':<10}{'Adam Loss':<20}{'AdaThird Loss':<20}{'Nova Loss':<20}")
-    print("-" * 70)
-    for epoch in range(0, EPOCHS, 10):
-        print(f"{epoch:<10}{adam_losses[epoch]:<20.4f}{adathird_losses[epoch]:<20.4f}{nova_losses[epoch]:<20.4f}")
-    print("-" * 70)
-    print(f"{'Final Loss':<10}{adam_losses[-1]:<20.4f}{adathird_losses[-1]:<20.4f}{nova_losses[-1]:<20.4f}")
-    print("-" * 70)
+    for optimizer, final_loss in losses.items():
+        print(f'{optimizer:<30} {final_loss}')
 
 if __name__ == "__main__":
     main()
