@@ -1,7 +1,7 @@
 import numpy as np
-from neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
-from optimizer import Adam, AdaThird
-from dataset import generate_data, get_mini_batches
+from .neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
+from .optimizers import Adam, AdaThird, Nova
+from .dataset import generate_data, get_mini_batches
 
 # Hyperparameters
 N_SAMPLES = 1000
@@ -63,16 +63,20 @@ def main():
     adathird_params = {'lr': 0.003, 'beta3': 0.99}
     adathird_losses = run_experiment(AdaThird, adathird_params, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
 
+    # Nova experiment
+    nova_params = {'lr': 0.001}
+    nova_losses = run_experiment(Nova, nova_params, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
+
     # Print comparison table
     print("Optimizer Performance Comparison")
-    print("-" * 50)
-    print(f"{'Epoch':<10}{'Adam Loss':<20}{'AdaThird Loss':<20}")
-    print("-" * 50)
+    print("-" * 70)
+    print(f"{'Epoch':<10}{'Adam Loss':<20}{'AdaThird Loss':<20}{'Nova Loss':<20}")
+    print("-" * 70)
     for epoch in range(0, EPOCHS, 10):
-        print(f"{epoch:<10}{adam_losses[epoch]:<20.4f}{adathird_losses[epoch]:<20.4f}")
-    print("-" * 50)
-    print(f"{'Final Loss':<10}{adam_losses[-1]:<20.4f}{adathird_losses[-1]:<20.4f}")
-    print("-" * 50)
+        print(f"{epoch:<10}{adam_losses[epoch]:<20.4f}{adathird_losses[epoch]:<20.4f}{nova_losses[epoch]:<20.4f}")
+    print("-" * 70)
+    print(f"{'Final Loss':<10}{adam_losses[-1]:<20.4f}{adathird_losses[-1]:<20.4f}{nova_losses[-1]:<20.4f}")
+    print("-" * 70)
 
 if __name__ == "__main__":
     main()
