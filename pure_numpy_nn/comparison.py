@@ -14,7 +14,7 @@ N_SAMPLES = 1000
 N_FEATURES = 32
 # 5 layers: 1 input, 3 hidden, 1 output
 LAYER_SIZES = (N_FEATURES, 64, 128, 64, N_FEATURES)
-EPOCHS = 50
+EPOCHS = 100
 BATCH_SIZE = 32
 
 def run_experiment(optimizer_class, optimizer_params, lr_low=1e-5, lr_high=1, n_samples=N_SAMPLES, n_features=N_FEATURES, layer_sizes=LAYER_SIZES, epochs=EPOCHS, batch_size=BATCH_SIZE):
