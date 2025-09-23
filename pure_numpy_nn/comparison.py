@@ -5,7 +5,7 @@ import optuna
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 from .neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
-from .optimizers import Adam, AdaThird, Nova, AdaThirdV2
+from .optimizers import Adam, AdaThird, Nova, AdaThirdV2, CogniO
 from .dataset import generate_data, get_mini_batches
 
 # Hyperparameters
@@ -97,6 +97,7 @@ def main():
         "AdaThird": 0.1769168308425637,
         "Nova": 0.18443070685599255,
         "AdaThirdV2": 0.1719002045491398,
+        "CogniO": 0.16145324453875395,
     }
 
     # Print comparison table
