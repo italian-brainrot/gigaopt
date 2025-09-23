@@ -25,10 +25,13 @@ def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, lay
 
     # Generate data
     X, y = generate_data(n_samples, n_features)
+    num_trials = 0
 
-    def objective(trial, print_time=False):
+    def objective(trial):
+        nonlocal num_trials
+        num_trials += 1
         start_sec = time.perf_counter()
-        
+
         # Suggest learning rate
         lr = trial.suggest_float("lr", 1e-5, 1, log=True)
 
@@ -53,21 +56,21 @@ def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, lay
                 grads = net.backward(loss_grad)
                 params = net.get_params()
                 optimizer.step(params, grads)
-                if print_time and epoch == 0 and i == 0:
+                if num_trials == 1 and epoch == 0 and i == 0:
                     print(f"first batch took {(time.perf_counter() - start_sec):.2f} seconds")
 
-            if print_time and epoch == 0:
+            if num_trials == 1 and epoch == 0:
                 print(f"first epoch took {(time.perf_counter() - start_sec):.2f} seconds")
-                
+
             avg_loss = epoch_loss / num_batches
             trial.report(avg_loss, epoch)
 
             if trial.should_prune():
                 raise optuna.exceptions.TrialPruned()
 
-        if print_time:
+        if num_trials == 1:
             print(f"first trial took {(time.perf_counter() - start_sec):.2f} seconds")
-            
+
         return avg_loss
 
     study = optuna.create_study(direction="minimize", pruner=optuna.pruners.HyperbandPruner())
@@ -82,14 +85,14 @@ def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, lay
 def main():
     """
     Main comparison function.
-    
+
     IMPORTANT: After an experiment is ran, replace it with the final loss value so that we don't re-run every optimizer each time.
     """
 
     losses = {
         # adam example:
         # "Adam": run_experiment(Adam, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
-        
+
         "Adam": 0.17723168193770694,
         "AdaThird": 0.1769168308425637,
         "Nova": 0.18443070685599255,
