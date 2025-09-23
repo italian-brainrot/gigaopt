@@ -14,7 +14,7 @@ N_SAMPLES = 1000
 N_FEATURES = 32
 # 5 layers: 1 input, 3 hidden, 1 output
 LAYER_SIZES = [N_FEATURES, 64, 128, 64, N_FEATURES]
-EPOCHS = 101 # Run for 100 epochs, print every 10
+EPOCHS = 101
 BATCH_SIZE = 32
 
 def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, layer_sizes, epochs, batch_size):
@@ -85,10 +85,13 @@ def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, lay
 
 def main():
     """
-    Main comparison function.
-    By default, this script will print the hardcoded results of the last run.
+    By default, this script will print the hardcoded results of the last run. 
+    To run an experiment, add `run_experiment` with your optimizer to hardcoded ``losses`` dictionary, 
+    after testing it make sure to replace it with the obtained result.
+    
     To run all experiments, use the --run-all flag.
-    Example: python -m pure_numpy_nn.comparison --run-all
+    Example: python -m pure_numpy_nn.comparison --run-all.
+    Note: running all experiments takes a while and should only be used if training code changed.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--run-all', action='store_true', help='Run all experiments')
