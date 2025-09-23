@@ -28,7 +28,7 @@ def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, lay
     X, y = generate_data(n_samples, n_features)
     num_trials = 0
 
-    def objective(trial):
+    def objective(trial: optuna.Trial):
         nonlocal num_trials
         num_trials += 1
         start_sec = time.perf_counter()
@@ -74,7 +74,9 @@ def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, lay
 
         return avg_loss
 
-    study = optuna.create_study(direction="minimize", pruner=optuna.pruners.HyperbandPruner())
+    sampler = optuna.samplers.TPESampler(seed=0, constant_liar=True)
+    pruner = optuna.pruners.HyperbandPruner()
+    study = optuna.create_study(direction="minimize", sampler=sampler, pruner=pruner)
     study.optimize(objective, n_trials=100)
 
     best_lr = study.best_trial.params['lr']
