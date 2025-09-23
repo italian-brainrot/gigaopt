@@ -7,21 +7,14 @@ import numpy as np
 from .dataset import generate_data, get_mini_batches
 from .mbs import mbs_minimize
 from .neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
-from .optimizers import (
-    Adam,
-    AdaThird,
-    AdaThirdV2,
-    CogniO,
-    CognitiveDissonanceOptimizer,
-    Nova,
-)
+from .optimizers import Adam, SGD
 
 # Hyperparameters
 N_SAMPLES = 1000
 N_FEATURES = 32
 # 5 layers: 1 input, 3 hidden, 1 output
 LAYER_SIZES = (N_FEATURES, 64, 128, 64, N_FEATURES)
-EPOCHS = 100
+EPOCHS = 50
 BATCH_SIZE = 32
 
 def run_experiment(optimizer_class, optimizer_params, lr_low=1e-5, lr_high=1, n_samples=N_SAMPLES, n_features=N_FEATURES, layer_sizes=LAYER_SIZES, epochs=EPOCHS, batch_size=BATCH_SIZE):
@@ -105,27 +98,21 @@ def main():
 
     if args.run_all:
         losses = {
+            "SGD": run_experiment(SGD, {}),
+            "Momentum": run_experiment(SGD, {"momentum": 0.95}),
             "Adam": run_experiment(Adam, {}),
-            "AdaThird": run_experiment(AdaThird, {}),
-            "Nova": run_experiment(Nova, {}),
-            "AdaThirdV2": run_experiment(AdaThirdV2, {}),
-            "CogniO": run_experiment(CogniO, {}),
-            "CognitiveDissonanceOptimizer": run_experiment(CognitiveDissonanceOptimizer, {}),
         }
     else:
         losses = {
-            "Adam": 0.16283625949557226,
-            "AdaThird": 0.17174578196348708,
-            "Nova": 0.16449540668400536,
-            "AdaThirdV2": 0.1719002045491398,
-            "CogniO": 0.16145324453875395,
-            "CognitiveDissonanceOptimizer": 0.1580218413340533,
+            "SGD": 0.20991,
+            "Momentum": 0.19919,
+            "Adam": 0.16420,
         }
 
     # Print comparison table
     print("Optimizer Performance Comparison")
     for optimizer, final_loss in losses.items():
-        print(f'{optimizer:<30} {final_loss}')
+        print(f'{optimizer:<30} {final_loss:.5f}')
 
 if __name__ == "__main__":
     main()
