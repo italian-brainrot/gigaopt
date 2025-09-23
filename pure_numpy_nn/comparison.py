@@ -1,11 +1,12 @@
 import time
+import argparse
 
 import numpy as np
 import optuna
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 from .neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
-from .optimizers import Adam, AdaThird, Nova, AdaThirdV2, CogniO
+from .optimizers import Adam, AdaThird, Nova, AdaThirdV2, CogniO, CognitiveDissonanceOptimizer
 from .dataset import generate_data, get_mini_batches
 
 # Hyperparameters
@@ -85,20 +86,32 @@ def run_experiment(optimizer_class, optimizer_params, n_samples, n_features, lay
 def main():
     """
     Main comparison function.
-
-    IMPORTANT: After an experiment is ran, replace it with the final loss value so that we don't re-run every optimizer each time.
+    By default, this script will print the hardcoded results of the last run.
+    To run all experiments, use the --run-all flag.
+    Example: python -m pure_numpy_nn.comparison --run-all
     """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run-all', action='store_true', help='Run all experiments')
+    args = parser.parse_args()
 
-    losses = {
-        # adam example:
-        # "Adam": run_experiment(Adam, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE)
-
-        "Adam": 0.17723168193770694,
-        "AdaThird": 0.1769168308425637,
-        "Nova": 0.18443070685599255,
-        "AdaThirdV2": 0.1719002045491398,
-        "CogniO": 0.16145324453875395,
-    }
+    if args.run_all:
+        losses = {
+            "Adam": run_experiment(Adam, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE),
+            "AdaThird": run_experiment(AdaThird, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE),
+            "Nova": run_experiment(Nova, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE),
+            "AdaThirdV2": run_experiment(AdaThirdV2, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE),
+            "CogniO": run_experiment(CogniO, {}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE),
+            "CognitiveDissonanceOptimizer": run_experiment(CognitiveDissonanceOptimizer, {"beta1_short": 0.9, "beta1_long": 0.99, "k": 10}, N_SAMPLES, N_FEATURES, LAYER_SIZES, EPOCHS, BATCH_SIZE),
+        }
+    else:
+        losses = {
+            "Adam": 0.17723168193770694,
+            "AdaThird": 0.1769168308425637,
+            "Nova": 0.18443070685599255,
+            "AdaThirdV2": 0.1719002045491398,
+            "CogniO": 0.16145324453875395,
+            "CognitiveDissonanceOptimizer": 0.1580218413340533,
+        }
 
     # Print comparison table
     print("Optimizer Performance Comparison")
