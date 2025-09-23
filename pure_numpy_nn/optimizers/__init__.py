@@ -1,3 +1,3 @@
 from .base import Optimizer
-from .momentum import Momentum
+from .sgd import SGD
 from .adam import Adam
