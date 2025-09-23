@@ -1,11 +1,11 @@
 import numpy as np
 from .base import Optimizer
 
-class Momentum(Optimizer):
+class SGD(Optimizer):
     """
-    Momentum optimizer.
+    SGD optimizer.
     """
-    def __init__(self, lr=0.01, momentum=0.9):
+    def __init__(self, lr=0.01, momentum=0.0):
         super().__init__(lr)
         self.momentum = momentum
         self.velocities = None
