@@ -103,13 +103,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--rerun', action='store_true', help='Rerun all experiments')
     args = parser.parse_args()
-
+    
     if args.rerun:
         losses = {
             "SGD": run_experiment(SGD, {}),
             "Momentum": run_experiment(SGD, {"momentum": 0.95}),
             "Adam": run_experiment(Adam, {}),
             "Athena": run_experiment(Athena, {}),
+            # "...": run_experiment(...),
         }
     else:
         losses = {
