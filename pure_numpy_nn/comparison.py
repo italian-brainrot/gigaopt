@@ -46,14 +46,19 @@ def run_experiment(optimizer_class, optimizer_params, lr_low=1e-5, lr_high=1, n_
             epoch_loss = 0
             num_batches = 0
             for i, (x_batch, y_batch) in enumerate(get_mini_batches(X, y, batch_size)):
-                y_pred = net.forward(x_batch)
-                loss = mse_loss(y_batch, y_pred)
+                params = net.get_params()
+
+                def closure():
+                    y_pred = net.forward(x_batch)
+                    loss = mse_loss(y_batch, y_pred)
+                    loss_grad = mse_loss_derivative(y_batch, y_pred)
+                    grads = net.backward(loss_grad)
+                    return loss, grads
+
+                loss = optimizer.step(params, closure)
                 epoch_loss += loss
                 num_batches += 1
-                loss_grad = mse_loss_derivative(y_batch, y_pred)
-                grads = net.backward(loss_grad)
-                params = net.get_params()
-                optimizer.step(params, grads)
+
                 if num_trials == 1 and epoch == 0 and i == 0:
                     print(f"first batch took {(time.perf_counter() - start_sec):.2f} seconds")
 

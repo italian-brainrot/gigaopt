@@ -14,10 +14,12 @@ class Adam(Optimizer):
         self.v = None
         self.t = 0
 
-    def step(self, params, grads):
+    def step(self, params, closure):
         """
         Performs a single optimization step.
         """
+        loss, grads = closure()
+
         # Lazy initialization of moments
         if self.m is None:
             self.m = [np.zeros_like(p) for p in params]
@@ -37,3 +39,5 @@ class Adam(Optimizer):
 
             # Update parameters
             param -= self.lr * m_hat / (np.sqrt(v_hat) + self.epsilon)
+
+        return loss
