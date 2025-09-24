@@ -12,8 +12,8 @@ class Optimizer:
         Performs a single optimization step.
         Arguments:
             params (list of ndarray): parameters to be optimized.
-            closure (callable): A closure with a `backward` argument
-            that reevaluates the model and returns the loss and gradients.
-            If `backward=False`, Gradients are not computed and returned as None.
+            closure (callable): 
+                A closure with a `backward` argument that reevaluates the model and returns (loss, gradients).
+                If `backward=False`, gradients are not computed and returned as None.
         """
         raise NotImplementedError
