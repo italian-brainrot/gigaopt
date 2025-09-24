@@ -48,11 +48,13 @@ def run_experiment(optimizer_class, optimizer_params, lr_low=1e-5, lr_high=1, n_
             for i, (x_batch, y_batch) in enumerate(get_mini_batches(X, y, batch_size)):
                 params = net.get_params()
 
-                def closure():
+                def closure(backward=True):
                     y_pred = net.forward(x_batch)
                     loss = mse_loss(y_batch, y_pred)
-                    loss_grad = mse_loss_derivative(y_batch, y_pred)
-                    grads = net.backward(loss_grad)
+                    grads = None
+                    if backward:
+                        loss_grad = mse_loss_derivative(y_batch, y_pred)
+                        grads = net.backward(loss_grad)
                     return loss, grads
 
                 loss = optimizer.step(params, closure)
