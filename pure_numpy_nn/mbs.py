@@ -6,8 +6,6 @@ from functools import partial
 from typing import Any
 
 import numpy as np
-import torch
-
 
 def format_number(number, n):
     """Rounds to n significant digits after the decimal point."""
