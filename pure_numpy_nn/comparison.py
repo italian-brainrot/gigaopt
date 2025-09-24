@@ -91,19 +91,20 @@ def run_experiment(optimizer_class, optimizer_params, lr_low=1e-5, lr_high=1, n_
 
 def main():
     """
-    By default, this script will print the hardcoded results of the last run.
-    To run an experiment, add `run_experiment` with your optimizer to hardcoded ``losses`` dictionary,
-    after testing it make sure to replace it with the obtained result.
+    How to test a new optimizer:
 
-    To run all experiments, use the --run-all flag.
-    Example: python -m pure_numpy_nn.comparison --run-all.
-    Note: running all experiments takes a while and should only be used if training code changed.
+    Add `run_experiment` to both dictionaries, then run without --rerun, 
+    after testing make sure to replace the line in the second dictionary with the obtained result.
+    
+    To rerun all experiments, use the --rerun flag.
+    Example: python -m pure_numpy_nn.comparison --rerun.
+    Note: rerunning all experiments takes a while and should only be used if training code changed.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--run-all', action='store_true', help='Run all experiments')
+    parser.add_argument('--rerun', action='store_true', help='Rerun all experiments')
     args = parser.parse_args()
 
-    if args.run_all:
+    if args.rerun:
         losses = {
             "SGD": run_experiment(SGD, {}),
             "Momentum": run_experiment(SGD, {"momentum": 0.95}),
@@ -116,6 +117,7 @@ def main():
             "Momentum": 0.19919,
             "Adam": 0.16420,
             "Athena": 0.16405,
+            # "...": run_experiment(...)
         }
 
     # Print comparison table
