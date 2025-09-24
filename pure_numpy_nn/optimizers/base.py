@@ -14,7 +14,8 @@ class Optimizer:
             params (list of ndarray): parameters to be optimized.
             closure (callable): 
                 A closure with a `backward` argument that reevaluates the model and returns (loss, gradients).
-                If `backward=False`, gradients are not computed and returned as None.
+                If `backward=False`, gradients are not computed and returned as None. The default value
+                for `backward` is True.
 
         Closure example:
         ```py
