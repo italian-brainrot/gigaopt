@@ -33,7 +33,6 @@ def format_number(number, n):
 def _tofloatlist(x) -> list[float]:
     if isinstance(x, (int,float)): return [x]
     if isinstance(x, np.ndarray) and x.size == 1: return [float(x.item())]
-    if isinstance(x, torch.Tensor) and x.numel() == 1: return [float(x.item())]
     return [float(i) for i in x]
 
 class MBS:
