@@ -10,10 +10,12 @@ class SGD(Optimizer):
         self.momentum = momentum
         self.velocities = None
 
-    def step(self, params, grads):
+    def step(self, params, closure):
         """
         Performs a single optimization step.
         """
+        loss, grads = closure()
+
         # Lazy initialization of velocities
         if self.velocities is None:
             self.velocities = [np.zeros_like(p) for p in params]
@@ -24,3 +26,5 @@ class SGD(Optimizer):
 
             # Update parameters in-place
             param += self.velocities[i]
+
+        return loss
