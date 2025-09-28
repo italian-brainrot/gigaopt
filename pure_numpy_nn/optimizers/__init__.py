@@ -2,3 +2,4 @@ from .base import Optimizer
 from .sgd import SGD
 from .adam import Adam
 from .athena import Athena
+from .soap import SOAP
