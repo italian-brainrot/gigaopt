@@ -7,7 +7,7 @@ import numpy as np
 from .dataset import generate_data, get_mini_batches
 from .mbs import mbs_minimize
 from .neural_net import NeuralNetwork, mse_loss, mse_loss_derivative
-from .optimizers import Adam, SGD, Athena, SOAP
+from .optimizers import Adam, SGD, Athena, SOAP, LBFGS
 
 # Hyperparameters
 N_SAMPLES = 1000
@@ -110,7 +110,8 @@ def main():
             "Momentum": run_experiment(SGD, {"momentum": 0.95}),
             "Adam": run_experiment(Adam, {}),
             "Athena": run_experiment(Athena, {}),
-            # "...": run_experiment(...),
+            "SOAP": run_experiment(SOAP, {}),
+            "LBFGS": run_experiment(LBFGS, {}),
         }
     else:
         losses = {
@@ -119,6 +120,7 @@ def main():
             "Adam": 0.16420,
             "Athena": 0.16405,
             "SOAP": 0.12423,
+            "LBFGS": 0.63996,
         }
 
     # Print comparison table
